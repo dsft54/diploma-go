@@ -18,7 +18,7 @@ func accrualRequests(orders []string, address string) ([]*storage.AccrualRespons
 	client.SetTimeout(time.Second * 1)
 	for _, order := range orders {
 		var result *storage.AccrualResponse
-		res, err := client.R().Get("http://"+address+"/api/orders/"+order)
+		res, err := client.R().Get(address+"/api/orders/"+order)
 		if err != nil {
 			return accrualResults, err
 		}
