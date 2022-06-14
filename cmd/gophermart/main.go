@@ -50,7 +50,7 @@ func main() {
 	if err != nil {
 		log.Println("Env parsing ERR", err)
 	}
-	flag.StringVar(&config.ServerAddress, "a", "localhost:8081", "Server address")
+	flag.StringVar(&config.ServerAddress, "a", "localhost:8080", "Server address")
 	flag.StringVar(&config.DatabaseURI, "d", "postgres://postgres:example@localhost:5432", "Postgress connection uri")
 	flag.StringVar(&config.AccrualAddress, "r", "", "Accrual system address")
 	flag.Parse()

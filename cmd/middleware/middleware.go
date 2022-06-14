@@ -86,6 +86,5 @@ func Authentication(cs *storage.CookieStorage) gin.HandlerFunc {
 			return
 		}
 		c.Next()
-		return
 	}
 }

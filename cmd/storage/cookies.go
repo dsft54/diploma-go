@@ -17,7 +17,7 @@ func NewCS(seedComplexity int) *CookieStorage {
 	cs := new(CookieStorage)
 	const charset = "abcdefghijklmnopqrstuvwxyz" +
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
 	b := make([]byte, seedComplexity)
 	for i := range b {
 		b[i] = charset[seededRand.Intn(len(charset))]
@@ -43,7 +43,6 @@ func (cs *CookieStorage) AddCookie(coo *http.Cookie) {
 		cs.Stock = append(cs.Stock, coo)
 	}
 	cs.m.Unlock()
-	return
 }
 
 func (cs *CookieStorage) CheckIfValid(coo *http.Cookie) (valid bool) {
@@ -75,4 +74,3 @@ func (cs *CookieStorage) GetUserbyCookie(value string) string {
 	}
 	return ""
 }
-

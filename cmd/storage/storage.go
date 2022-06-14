@@ -23,7 +23,7 @@ func (s *Storage) Ping() error {
 func NewStorageConnection(ctx context.Context, uri string) (*Storage, error) {
 	store := new(Storage)
 	if uri == "" {
-		return store, errors.New("Database connection uri is empty")
+		return store, errors.New("database connection uri is empty")
 	}
 	connectionConfig, err := pgx.ParseConnectionString(uri)
 	if err != nil {
@@ -64,7 +64,7 @@ func (s *Storage) prepareUsersTable() error {
 			withdrawals DOUBLE PRECISION
 		);`)
 	if err != nil {
-		return errors.New("Failed to create table USERS in db")
+		return errors.New("failed to create table users in db")
 	}
 	return nil
 }
@@ -80,7 +80,7 @@ func (s *Storage) prepareOrdersTable() error {
 			accrual DOUBLE PRECISION
 		);`)
 	if err != nil {
-		return errors.New("Failed to create table ORDERS in db")
+		return errors.New("failed to create table orders in db")
 	}
 	return nil
 }
@@ -95,7 +95,7 @@ func (s *Storage) prepareWithdrawalsTable() error {
 			withdraw DOUBLE PRECISION
 		);`)
 	if err != nil {
-		return errors.New("Failed to create table ORDERS in db")
+		return errors.New("failed to create table withdrawals in db")
 	}
 	return nil
 }
@@ -148,18 +148,18 @@ func (s *Storage) DeleteUser(login string) error {
 	return nil
 }
 
-func (s *Storage) CreateOrder(user, order, time_created string) error {
+func (s *Storage) CreateOrder(user, order, timeCreated string) error {
 	_, err := s.Connection.Exec(
 		`INSERT INTO orders (order_number, owner, creation_time, status)
 			VALUES ($1, $2, $3, $4);`,
-		order, user, time_created, "NEW")
+		order, user, timeCreated, "NEW")
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *Storage) CreateWithdrawOrder(user, order, time_created string, withdraw float64) (bool, error) {
+func (s *Storage) CreateWithdrawOrder(user, order, timeCreated string, withdraw float64) (bool, error) {
 	var balance float64
 	row := s.Connection.QueryRow(
 		`SELECT balance FROM users 
@@ -175,7 +175,7 @@ func (s *Storage) CreateWithdrawOrder(user, order, time_created string, withdraw
 	_, err = s.Connection.Exec(
 		`INSERT INTO withdrawals (order_number, owner, creation_time, withdraw)
 			VALUES ($1, $2, $3, $4);`,
-		order, user, time_created, withdraw)
+		order, user, timeCreated, withdraw)
 	if err != nil {
 		return false, nil
 	}

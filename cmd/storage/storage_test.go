@@ -114,6 +114,9 @@ func TestStorage_FindLoginPass(t *testing.T) {
 		Password:    "1",
 		TimeCreated: "Right now",
 	})
+	if err != nil {
+		t.Errorf("Failed to create new test user, error: %v", err)
+	}
 
 	tests := []struct {
 		name     string
@@ -218,7 +221,9 @@ func TestStorage_DeleteUser(t *testing.T) {
 		Password:    "1",
 		TimeCreated: "Right now",
 	})
-
+	if err != nil {
+		t.Errorf("Failed to create new test user, error: %v", err)
+	}
 	type args struct {
 		login string
 	}
