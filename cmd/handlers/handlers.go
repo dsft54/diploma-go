@@ -223,6 +223,7 @@ func PlaceOrder(s *storage.Storage, cs *storage.CookieStorage) gin.HandlerFunc {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
+		log.Println("Order placement log - User: ", username, "Creating order: ", string(rawNumber), "Order ", string(rawNumber), "was already uploaded by", ordUser, "<END")
 		creationTime := time.Now().Format(time.RFC3339)
 		if ordUser == "" {
 			err = s.CreateOrder(username, string(rawNumber), creationTime)
