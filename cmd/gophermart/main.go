@@ -54,7 +54,7 @@ func main() {
 	flag.StringVar(&config.DatabaseURI, "d", "postgres://postgres:example@localhost:5432", "Postgress connection uri")
 	flag.StringVar(&config.AccrualAddress, "r", "", "Accrual system address")
 	flag.Parse()
-	
+	log.Println("\n\n\n\n\n\n\n\n", config, "------------------------------------------")
 	// Init storages
 	ctx, cancel := context.WithCancel(context.Background())
 	dbStore, err := storage.NewStorageConnection(ctx, config.DatabaseURI)
