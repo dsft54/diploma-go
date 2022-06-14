@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"testing"
+	"time"
 )
 
 func TestNewStorage(t *testing.T) {
@@ -60,7 +61,7 @@ func TestStorage_FindUserExists(t *testing.T) {
 	err = ts.CreateUser(&RegisterForm{
 		Login:       "testExists",
 		Password:    "1",
-		TimeCreated: "Right now",
+		TimeCreated: time.Now().Format(time.RFC3339),
 	})
 	if err != nil {
 		t.Errorf("Failed to create test case %v", err)
@@ -112,7 +113,7 @@ func TestStorage_FindLoginPass(t *testing.T) {
 	err = ts.CreateUser(&RegisterForm{
 		Login:       "testExists",
 		Password:    "1",
-		TimeCreated: "Right now",
+		TimeCreated: time.Now().Format(time.RFC3339),
 	})
 	if err != nil {
 		t.Errorf("Failed to create new test user, error: %v", err)
@@ -180,7 +181,7 @@ func TestStorage_CreateUser(t *testing.T) {
 			args: args{&RegisterForm{
 				Login:       "test",
 				Password:    "1",
-				TimeCreated: "Right now",
+				TimeCreated: time.Now().Format(time.RFC3339),
 			},
 			},
 			wantErr: false,
@@ -191,7 +192,7 @@ func TestStorage_CreateUser(t *testing.T) {
 			args: args{&RegisterForm{
 				Login:       "test",
 				Password:    "1",
-				TimeCreated: "Right now",
+				TimeCreated: time.Now().Format(time.RFC3339),
 			},
 			},
 			wantErr: true,
@@ -219,7 +220,7 @@ func TestStorage_DeleteUser(t *testing.T) {
 	err = ts.CreateUser(&RegisterForm{
 		Login:       "testExists",
 		Password:    "1",
-		TimeCreated: "Right now",
+		TimeCreated: time.Now().Format(time.RFC3339),
 	})
 	if err != nil {
 		t.Errorf("Failed to create new test user, error: %v", err)
@@ -234,15 +235,15 @@ func TestStorage_DeleteUser(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "User exists",
-			s: ts,
-			args: args{login: "testExists"},
+			name:    "User exists",
+			s:       ts,
+			args:    args{login: "testExists"},
 			wantErr: false,
 		},
 		{
-			name: "User not exists (should return no errors)",
-			s: ts,
-			args: args{login: "testExists"},
+			name:    "User not exists (should return no errors)",
+			s:       ts,
+			args:    args{login: "testExists"},
 			wantErr: false,
 		},
 	}
