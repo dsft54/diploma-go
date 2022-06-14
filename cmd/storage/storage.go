@@ -195,7 +195,7 @@ func (s *Storage) FindOrderNumberExists(order string) (string, error) {
 	var username string
 	row := s.Connection.QueryRow(
 		`SELECT owner FROM orders 
-			WHERE orders.order_number=$1);`,
+			WHERE orders.order_number=$1;`,
 		order)
 	err := row.Scan(&username)
 	if err != nil {
