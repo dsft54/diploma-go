@@ -12,13 +12,13 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-func accrualRequests(orders []string) ([]*storage.AccrualResponse, error) {
+func accrualRequests(orders []string, address string) ([]*storage.AccrualResponse, error) {
 	accrualResults := make([]*storage.AccrualResponse, 0)
 	client := resty.New()
 	client.SetTimeout(time.Second * 1)
 	for _, order := range orders {
 		var result *storage.AccrualResponse
-		res, err := client.R().Get("http://localhost:8080/api/orders/"+order)
+		res, err := client.R().Get("http://"+address+"/api/orders/"+order)
 		if err != nil {
 			return accrualResults, err
 		}
@@ -39,7 +39,7 @@ func accrualRequests(orders []string) ([]*storage.AccrualResponse, error) {
 	return accrualResults, nil
 }
 
-func StartAccrualAPI(ctx context.Context, s *storage.Storage, wg *sync.WaitGroup) {
+func StartAccrualAPI(ctx context.Context, address string, s *storage.Storage, wg *sync.WaitGroup) {
 	collectorTimer := time.NewTicker(time.Second * 2)
 	defer wg.Done()
 	for {
@@ -53,7 +53,7 @@ func StartAccrualAPI(ctx context.Context, s *storage.Storage, wg *sync.WaitGroup
 			}
 			if len(orders) != 0 {
 				log.Println("New orders in processing status: ", orders)
-				res, err := accrualRequests(orders)
+				res, err := accrualRequests(orders, address)
 				if err != nil {
 					log.Println("Failed to acquire accrual results", err)
 				}
@@ -68,7 +68,7 @@ func StartAccrualAPI(ctx context.Context, s *storage.Storage, wg *sync.WaitGroup
 			}
 			if len(orders) != 0 {
 				log.Println("New orders: ", orders)
-				res, err := accrualRequests(orders)
+				res, err := accrualRequests(orders, address)
 				if err != nil {
 					log.Println("Failed to acquire accrual results", err)
 				}

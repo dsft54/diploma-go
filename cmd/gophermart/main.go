@@ -80,7 +80,7 @@ func main() {
 			log.Println("Listen: ", err)
 		}
 	}()
-	go handlers.StartAccrualAPI(ctx, dbStore, wg)
+	go handlers.StartAccrualAPI(ctx, config.AccrualAddress, dbStore, wg)
 
 	// Exit on syscalls
 	syscallCancelChan := make(chan os.Signal, 1)
