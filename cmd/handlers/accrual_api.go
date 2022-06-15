@@ -4,12 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"sync"
 	"time"
 
-	"diploma/cmd/storage"
-
 	"github.com/go-resty/resty/v2"
+
+	"diploma/cmd/storage"
 )
 
 func accrualRequests(orders []string, address string) ([]*storage.AccrualResponse, error) {
@@ -18,14 +17,14 @@ func accrualRequests(orders []string, address string) ([]*storage.AccrualRespons
 	client.SetTimeout(time.Second * 1)
 	for _, order := range orders {
 		var result *storage.AccrualResponse
-		res, err := client.R().Get(address+"/api/orders/"+order)
+		res, err := client.R().Get(address + "/api/orders/" + order)
 		if err != nil {
 			return accrualResults, err
 		}
 		if res.StatusCode() != 200 {
 			accrualResults = append(accrualResults, &storage.AccrualResponse{
-				Order: order,
-				Status: "INVALID",
+				Order:   order,
+				Status:  "INVALID",
 				Accrual: 0,
 			})
 			continue
@@ -39,14 +38,14 @@ func accrualRequests(orders []string, address string) ([]*storage.AccrualRespons
 	return accrualResults, nil
 }
 
-func StartAccrualAPI(ctx context.Context, address string, s *storage.Storage, wg *sync.WaitGroup) {
+func StartAccrualAPI(ctx context.Context, address string, s *storage.Storage) {
 	collectorTimer := time.NewTicker(time.Second * 2)
-	defer wg.Done()
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case <-collectorTimer.C:
+			log.Println("ctx not done")
 			orders, err := s.AccrualSelector("PROCESSING")
 			if err != nil {
 				log.Println("DB connection not working in accrual handler", err)

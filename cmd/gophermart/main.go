@@ -7,16 +7,15 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
+
+	"github.com/caarlos0/env"
+	"github.com/gin-gonic/gin"
 
 	"diploma/cmd/handlers"
 	"diploma/cmd/middleware"
 	"diploma/cmd/settings"
 	"diploma/cmd/storage"
-
-	"github.com/caarlos0/env"
-	"github.com/gin-gonic/gin"
 )
 
 func setupGinHandlers(s *storage.Storage, cs *storage.CookieStorage) *gin.Engine {
@@ -31,7 +30,7 @@ func setupGinHandlers(s *storage.Storage, cs *storage.CookieStorage) *gin.Engine
 
 	router.GET("/ping", handlers.PingDB(s))
 	router.GET("/api/user/balance", handlers.GetBalance(s, cs))
-	router.GET("/api/user/balance/withdrawals",handlers.GetWithdrawals(s, cs))
+	router.GET("/api/user/balance/withdrawals", handlers.GetWithdrawals(s, cs))
 	router.GET("/api/user/orders", handlers.GetOrders(s, cs))
 	router.POST("/api/user/register", handlers.Register(s, cs))
 	router.POST("/api/user/login", handlers.Login(s, cs))
@@ -43,8 +42,6 @@ func setupGinHandlers(s *storage.Storage, cs *storage.CookieStorage) *gin.Engine
 
 func main() {
 	// Init config, parse flags, init base context
-	wg := new(sync.WaitGroup)
-	wg.Add(1)
 	config := new(settings.Config)
 	err := env.Parse(config)
 	if err != nil {
@@ -58,6 +55,7 @@ func main() {
 
 	// Init storages
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	dbStore, err := storage.NewStorageConnection(ctx, config.DatabaseURI)
 	if err != nil {
 		panic(err)
@@ -80,7 +78,7 @@ func main() {
 			log.Println("Listen: ", err)
 		}
 	}()
-	go handlers.StartAccrualAPI(ctx, config.AccrualAddress, dbStore, wg)
+	go handlers.StartAccrualAPI(ctx, config.AccrualAddress, dbStore)
 
 	// Exit on syscalls
 	syscallCancelChan := make(chan os.Signal, 1)
@@ -91,6 +89,4 @@ func main() {
 		log.Fatal("Server Shutdown:", err)
 	}
 	log.Println("Server exiting")
-	cancel()
-	wg.Wait()
 }

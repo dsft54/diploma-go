@@ -31,6 +31,7 @@ func (cs *CookieStorage) AddCookie(coo *http.Cookie) {
 	exists := false
 	coo.Expires = time.Now().Add(time.Second * time.Duration(coo.MaxAge))
 	cs.m.Lock()
+	defer cs.m.Unlock()
 	for i, v := range cs.Stock {
 		if v.Value == coo.Value {
 			exists = true
@@ -42,18 +43,17 @@ func (cs *CookieStorage) AddCookie(coo *http.Cookie) {
 	} else {
 		cs.Stock = append(cs.Stock, coo)
 	}
-	cs.m.Unlock()
 }
 
 func (cs *CookieStorage) CheckIfValid(coo *http.Cookie) (valid bool) {
 	cs.m.RLock()
+	defer cs.m.Unlock()
 	for _, v := range cs.Stock {
 		if v.Value == coo.Value {
 			valid = true
 			coo = v
 		}
 	}
-	cs.m.RUnlock()
 	if !valid {
 		return valid
 	}

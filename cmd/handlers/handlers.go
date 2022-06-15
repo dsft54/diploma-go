@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	
+	"github.com/gin-gonic/gin"
 
 	"diploma/cmd/storage"
-
-	"github.com/gin-gonic/gin"
 )
 
 func PingDB(s *storage.Storage) gin.HandlerFunc {

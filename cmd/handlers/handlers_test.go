@@ -6,10 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"diploma/cmd/storage"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
+
+	"diploma/cmd/storage"
 )
 
 func TestPingDB(t *testing.T) {
