@@ -233,12 +233,12 @@ func (s *Storage) FindOrdersByOwner(owner string) ([]*OrderStatus, error) {
 	return orders, nil
 }
 
-func (s *Storage) AccrualProcessingSelector() ([]string, error) {
+func (s *Storage) AccrualSelector(inputStatus string) ([]string, error) {
 	orders := make([]string, 0)
 	rows, err := s.Connection.Query(
 		`SELECT order_number FROM orders 
 			WHERE orders.status=$1;`,
-		"PROCESSING")
+		inputStatus)
 	if err != nil {
 		return orders, err
 	}
@@ -254,29 +254,8 @@ func (s *Storage) AccrualProcessingSelector() ([]string, error) {
 	if err != nil {
 		return orders, err
 	}
-	return orders, nil
-}
-
-func (s *Storage) AccrualNewSelector() ([]string, error) {
-	orders := make([]string, 0)
-	rows, err := s.Connection.Query(
-		`SELECT order_number FROM orders 
-			WHERE orders.status=$1;`,
-		"NEW")
-	if err != nil {
-		return orders, err
-	}
-	for rows.Next() {
-		order := ""
-		err = rows.Scan(&order)
-		if err != nil {
-			return orders, err
-		}
-		orders = append(orders, order)
-	}
-	err = rows.Err()
-	if err != nil {
-		return orders, err
+	if inputStatus == "PROCESSING" {
+		return orders, nil
 	}
 	for _, order := range orders {
 		_, err = s.Connection.Exec(
