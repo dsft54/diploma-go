@@ -45,7 +45,6 @@ func StartAccrualAPI(ctx context.Context, address string, s *storage.Storage) {
 		case <-ctx.Done():
 			return
 		case <-collectorTimer.C:
-			log.Println("ctx not done")
 			orders, err := s.AccrualSelector("PROCESSING")
 			if err != nil {
 				log.Println("DB connection not working in accrual handler", err)

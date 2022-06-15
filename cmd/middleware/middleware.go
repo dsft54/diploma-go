@@ -28,7 +28,7 @@ func Compression() gin.HandlerFunc {
 		}
 		gz, err := gzip.NewWriterLevel(c.Writer, gzip.BestSpeed)
 		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
+			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 		defer gz.Close()
@@ -49,14 +49,14 @@ func Decompression() gin.HandlerFunc {
 		}
 		gz, err := gzip.NewReader(c.Request.Body)
 		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
+			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 		defer gz.Close()
 
 		body, err := io.ReadAll(gz)
 		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
+			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 

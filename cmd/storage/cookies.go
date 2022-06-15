@@ -47,7 +47,7 @@ func (cs *CookieStorage) AddCookie(coo *http.Cookie) {
 
 func (cs *CookieStorage) CheckIfValid(coo *http.Cookie) (valid bool) {
 	cs.m.RLock()
-	defer cs.m.Unlock()
+	defer cs.m.RUnlock()
 	for _, v := range cs.Stock {
 		if v.Value == coo.Value {
 			valid = true
