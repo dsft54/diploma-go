@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -38,8 +39,9 @@ func accrualRequests(orders []string, address string) ([]*storage.AccrualRespons
 	return accrualResults, nil
 }
 
-func StartAccrualAPI(ctx context.Context, address string, s *storage.Storage) {
+func StartAccrualAPI(ctx context.Context, address string, s *storage.Storage, wg *sync.WaitGroup) {
 	collectorTimer := time.NewTicker(time.Second * 2)
+	defer wg.Done()
 	for {
 		select {
 		case <-ctx.Done():

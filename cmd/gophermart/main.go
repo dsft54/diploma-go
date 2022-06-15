@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	"github.com/caarlos0/env"
@@ -42,6 +43,8 @@ func setupGinHandlers(s *storage.Storage, cs *storage.CookieStorage) *gin.Engine
 
 func main() {
 	// Init config, parse flags, init base context
+	wg := new(sync.WaitGroup)
+	defer wg.Wait()
 	config := new(settings.Config)
 	err := env.Parse(config)
 	if err != nil {
@@ -52,7 +55,7 @@ func main() {
 	flag.StringVar(&config.AccrualAddress, "r", config.AccrualAddress, "Accrual system address")
 	flag.Parse()
 	log.Println(config)
-
+	
 	// Init storages
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -72,13 +75,16 @@ func main() {
 		Addr:    config.ServerAddress,
 		Handler: router,
 	}
-	go func() {
+	wg.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
 		err := server.ListenAndServe()
 		if err != nil {
 			log.Println("Listen: ", err)
 		}
-	}()
-	go handlers.StartAccrualAPI(ctx, config.AccrualAddress, dbStore)
+	}(wg)
+	wg.Add(1)
+	go handlers.StartAccrualAPI(ctx, config.AccrualAddress, dbStore, wg)
 
 	// Exit on syscalls
 	syscallCancelChan := make(chan os.Signal, 1)
