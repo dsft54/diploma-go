@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"diploma/cmd/storage"
+	"github.com/dsft54/gophermart/internal/pkg/storage"
 )
 
 func accrualRequests(orders []string, address string) ([]*storage.AccrualResponse, error) {

@@ -3,12 +3,13 @@ package middleware
 import (
 	"bytes"
 	"compress/gzip"
-	"diploma/cmd/storage"
 	"io"
 	"net/http"
 	"strings"
-
+	
 	"github.com/gin-gonic/gin"
+	
+	"github.com/dsft54/gophermart/internal/pkg/storage"
 )
 
 type gzipBodyWriter struct {

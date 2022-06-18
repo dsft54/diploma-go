@@ -13,7 +13,7 @@ import (
 	
 	"github.com/gin-gonic/gin"
 
-	"diploma/cmd/storage"
+	"github.com/dsft54/gophermart/internal/pkg/storage"
 )
 
 func PingDB(s *storage.Storage) gin.HandlerFunc {

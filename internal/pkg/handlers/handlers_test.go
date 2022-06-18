@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
 
-	"diploma/cmd/storage"
+	"github.com/dsft54/gophermart/internal/pkg/storage"
 )
 
 func TestPingDB(t *testing.T) {

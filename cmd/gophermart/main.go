@@ -13,10 +13,10 @@ import (
 	"github.com/caarlos0/env"
 	"github.com/gin-gonic/gin"
 
-	"diploma/cmd/handlers"
-	"diploma/cmd/middleware"
-	"diploma/cmd/settings"
-	"diploma/cmd/storage"
+	"github.com/dsft54/gophermart/internal/pkg/handlers"
+	"github.com/dsft54/gophermart/internal/pkg/middleware"
+	"github.com/dsft54/gophermart/internal/pkg/settings"
+	"github.com/dsft54/gophermart/internal/pkg/storage"
 )
 
 func setupGinHandlers(s *storage.Storage, cs *storage.CookieStorage) *gin.Engine {
@@ -55,7 +55,7 @@ func main() {
 	flag.StringVar(&config.AccrualAddress, "r", config.AccrualAddress, "Accrual system address")
 	flag.Parse()
 	log.Println(config)
-	
+
 	// Init storages
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -75,6 +75,11 @@ func main() {
 		Addr:    config.ServerAddress,
 		Handler: router,
 	}
+	defer func() {
+		if err := server.Shutdown(ctx); err != nil {
+			log.Fatal("Server Shutdown:", err)
+		}
+	}()
 	wg.Add(1)
 	go func(wg *sync.WaitGroup) {
 		defer wg.Done()
@@ -91,9 +96,5 @@ func main() {
 	signal.Notify(syscallCancelChan, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 	sig := <-syscallCancelChan
 	log.Println("Caught syscall:", sig)
-	if err := server.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
-	}
 	log.Println("Server exiting")
 }
-
